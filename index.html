@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registration Page</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(135deg, #4f46e5, #9333ea);
+    min-height: 100vh;
+    padding: 30px 16px;
+    color: #1f2937;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+  h1 { color: #fff; text-align: center; margin-bottom: 24px; }
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 26px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.2);
+    margin-bottom: 24px;
+  }
+  .card h2 { margin-bottom: 18px; color: #4f46e5; font-size: 1.3rem; }
+  form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .field { display: flex; flex-direction: column; }
+  .field.full { grid-column: 1 / -1; }
+  label { font-size: .85rem; font-weight: 600; margin-bottom: 6px; }
+  input, select, textarea {
+    padding: 10px 12px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 8px;
+    font-size: .95rem;
+    font-family: inherit;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79,70,229,.2);
+  }
+  .radio-group { display: flex; gap: 18px; padding-top: 6px; }
+  .radio-group label { font-weight: 400; display: flex; align-items: center; gap: 6px; margin: 0; }
+  .error { color: #dc2626; font-size: .78rem; margin-top: 4px; min-height: 1em; }
+  .actions { grid-column: 1 / -1; display: flex; gap: 12px; }
+  button {
+    padding: 11px 22px;
+    border: none;
+    border-radius: 8px;
+    font-size: .95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .1s, opacity .2s;
+  }
+  button:hover { opacity: .9; }
+  button:active { transform: scale(.97); }
+  .btn-primary { background: #4f46e5; color: #fff; }
+  .btn-secondary { background: #e5e7eb; color: #374151; }
+  .btn-danger { background: #ef4444; color: #fff; padding: 6px 12px; font-size: .8rem; }
+  .toast {
+    display: none;
+    background: #dcfce7;
+    color: #166534;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 640px; }
+  th, td { padding: 11px 12px; text-align: left; border-bottom: 1px solid #e5e7eb; font-size: .9rem; }
+  th { background: #f3f4f6; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+  tr:hover td { background: #faf5ff; }
+  .empty { text-align: center; color: #6b7280; padding: 24px; }
+  .toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+  .toolbar input { max-width: 240px; }
+  @media (max-width: 600px) { form { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📝 Registration Portal</h1>
+
+  <!-- Registration Form -->
+  <div class="card">
+    <h2>Register</h2>
+    <div class="toast" id="toast">Registration saved successfully!</div>
+    <form id="regForm" novalidate>
+      <div class="field">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" placeholder="e.g. Rahul Sharma">
+        <span class="error" id="nameErr"></span>
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="you@example.com">
+        <span class="error" id="emailErr"></span>
+      </div>
+      <div class="field">
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" placeholder="10-digit number" maxlength="10">
+        <span class="error" id="phoneErr"></span>
+      </div>
+      <div class="field">
+        <label for="dob">Date of Birth</label>
+        <input type="date" id="dob">
+        <span class="error" id="dobErr"></span>
+      </div>
+      <div class="field">
+        <label>Gender</label>
+        <div class="radio-group">
+          <label><input type="radio" name="gender" value="Male" checked> Male</label>
+          <label><input type="radio" name="gender" value="Female"> Female</label>
+          <label><input type="radio" name="gender" value="Other"> Other</label>
+        </div>
+      </div>
+      <div class="field">
+        <label for="course">Course</label>
+        <select id="course">
+          <option value="">-- Select --</option>
+          <option>Web Development</option>
+          <option>Data Science</option>
+          <option>Graphic Design</option>
+          <option>Digital Marketing</option>
+        </select>
+        <span class="error" id="courseErr"></span>
+      </div>
+      <div class="field full">
+        <label for="address">Address</label>
+        <textarea id="address" rows="3" placeholder="Your address"></textarea>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn-primary">Submit</button>
+        <button type="reset" class="btn-secondary" id="resetBtn">Reset</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Data Table -->
+  <div class="card">
+    <div class="toolbar">
+      <h2 style="margin:0">Registered Data (<span id="count">0</span>)</h2>
+      <input type="text" id="search" placeholder="Search name, email, course...">
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Name</th><th>Email</th><th>Phone</th>
+            <th>DOB</th><th>Gender</th><th>Course</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const KEY = "registrations";
+  const form = document.getElementById("regForm");
+  const tbody = document.getElementById("tbody");
+  const toast = document.getElementById("toast");
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(KEY)) || []; }
+    catch (e) { return []; }
+  }
+  function save(data) {
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {}
+  }
+  let records = load();
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function render() {
+    const q = document.getElementById("search").value.toLowerCase();
+    const rows = records
+      .map((r, i) => ({ r, i }))
+      .filter(({ r }) => [r.name, r.email, r.course].join(" ").toLowerCase().includes(q));
+
+    document.getElementById("count").textContent = records.length;
+
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="8" class="empty">No records found.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(({ r, i }, n) => `
+      <tr>
+        <td>${n + 1}</td>
+        <td>${esc(r.name)}</td>
+        <td>${esc(r.email)}</td>
+        <td>${esc(r.phone)}</td>
+        <td>${esc(r.dob)}</td>
+        <td>${esc(r.gender)}</td>
+        <td>${esc(r.course)}</td>
+        <td><button class="btn-danger" onclick="removeRecord(${i})">Delete</button></td>
+      </tr>`).join("");
+  }
+
+  function removeRecord(i) {
+    if (!confirm("Delete this record?")) return;
+    records.splice(i, 1);
+    save(records);
+    render();
+  }
+
+  function setErr(id, msg) { document.getElementById(id).textContent = msg; return !msg; }
+
+  function validate() {
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const dob = document.getElementById("dob").value;
+    const course = document.getElementById("course").value;
+    let ok = true;
+    ok = setErr("nameErr", name.length < 3 ? "Enter at least 3 characters." : "") && ok;
+    ok = setErr("emailErr", /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? "" : "Enter a valid email.") && ok;
+    ok = setErr("phoneErr", /^[6-9]\d{9}$/.test(phone) ? "" : "Enter a valid 10-digit mobile number.") && ok;
+    ok = setErr("dobErr", dob ? "" : "Select your date of birth.") && ok;
+    ok = setErr("courseErr", course ? "" : "Please choose a course.") && ok;
+    return ok;
+  }
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    if (!validate()) return;
+    records.push({
+      name: document.getElementById("name").value.trim(),
+      email: document.getElementById("email").value.trim(),
+      phone: document.getElementById("phone").value.trim(),
+      dob: document.getElementById("dob").value,
+      gender: document.querySelector('input[name="gender"]:checked').value,
+      course: document.getElementById("course").value,
+      address: document.getElementById("address").value.trim()
+    });
+    save(records);
+    form.reset();
+    render();
+    toast.style.display = "block";
+    setTimeout(() => toast.style.display = "none", 2500);
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    document.querySelectorAll(".error").forEach(el => el.textContent = "");
+  });
+  document.getElementById("search").addEventListener("input", render);
+
+  render();
+</script>
+</body>
+</html>
